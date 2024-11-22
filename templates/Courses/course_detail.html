@@ -1,0 +1,280 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ course.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/courses/devops.css' %}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <!-- Include CKEditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+  </head>
+  <body>
+    <div id="header">
+      <div class="logo">{{ course.title }}</div>
+      <div class="right-panel">
+        <a href="{% url 'course_list' %}" class="header-link">Courses</a>
+        <a href="{% url 'login' %}" class="header-link">Logout</a>
+      </div>
+    </div>
+
+    <div class="app">
+      <!-- Sidebar -->
+      <div id="sidebar">
+        <div class="sidebar-header">
+          <h3>{{ course.description }}</h3>
+        </div>
+        <ul class="content-list">
+          {% for subtitle in subtitles %}
+          <li class="subtitle-item">
+            <h4
+              class="subtitle-title"
+              onclick="toggleContent({{ subtitle.id }})"
+            >
+              {{ subtitle.name }}
+            </h4>
+            <ul
+              class="content-links"
+              id="content-links-{{ subtitle.id }}"
+              style="display: none"
+            >
+              <!-- Videos -->
+              {% for video in subtitle.videos.all %}
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="video"
+                  data-title="{{ video.title }}"
+                  data-url="{{ video.file.url }}"
+                >
+                  {{ video.title }} (Video)
+                </a>
+              </li>
+              {% endfor %}
+
+              <!-- PDFs -->
+              {% for pdf in subtitle.pdfs.all %}
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="pdf"
+                  data-title="{{ pdf.title }}"
+                  data-url="{{ pdf.file.url }}"
+                >
+                  {{ pdf.title }} (PDF)
+                </a>
+              </li>
+              {% endfor %}
+
+              <!-- Notes -->
+              {% for note in subtitle.notes.all %}
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="notes"
+                  data-title="{{ note.title }}"
+                  data-content="{{ note.content|safe }}"
+                  onclick="editNote({{ note.id }}, '{{ note.title }}', '{{ note.content|escapejs }}')"
+                >
+                  {{ note.title }} (Notes)
+                </a>
+                <button onclick="deleteNote({{ note.id }})" class="delete-btn">
+                  Delete
+                </button>
+              </li>
+              {% endfor %}
+
+              <!-- Create Your Own Notes -->
+              <li>
+                <button
+                  class="content-link"
+                  id="create-note-{{ subtitle.id }}"
+                  onclick="openNoteEditor({{ subtitle.id }}, '{{ subtitle.name }}')"
+                >
+                  Create Your Own Notes
+                </button>
+              </li>
+            </ul>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div id="main-content">
+        <button id="toggle-sidebar" title="Toggle Sidebar">&#x276E;</button>
+        <div id="content-header">
+          <h1>Welcome to {{ course.title }}</h1>
+          <p>Select a topic to get started.</p>
+        </div>
+
+        <!-- Notes Editor Container -->
+        <div id="note-editor-container" style="display: none">
+          <h2 id="note-editor-heading"></h2>
+          <form method="POST" id="note-form">
+            {% csrf_token %}
+            <textarea name="content" id="editor"></textarea>
+            <button type="submit">Save Notes</button>
+          </form>
+        </div>
+
+        <div id="content-viewer">
+          <p>No content selected. Please choose a topic from the sidebar.</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/courses/devops.js' %}"></script>
+    <script>
+      let editorInstance;
+
+      // Open the note editor for a new note
+      function openNoteEditor(subtitleId, subtitleName) {
+        document.getElementById("note-editor-heading").textContent =
+          subtitleName + " Notes";
+        document.getElementById("note-editor-container").style.display =
+          "block";
+
+        initializeEditor("");
+        setHiddenInput("subtitle_id", subtitleId);
+      }
+
+      // Open the editor to edit an existing note
+      function editNote(noteId, noteTitle, noteContent) {
+        document.getElementById("note-editor-heading").textContent =
+          "Edit Note: " + noteTitle;
+        document.getElementById("note-editor-container").style.display =
+          "block";
+
+        initializeEditor(noteContent);
+        setHiddenInput("note_id", noteId);
+      }
+
+      // Initialize CKEditor with optional content
+      function initializeEditor(content = "") {
+        if (editorInstance) {
+          editorInstance.destroy().catch((error) => console.error(error));
+        }
+
+        ClassicEditor.create(document.getElementById("editor"))
+          .then((editor) => {
+            editorInstance = editor;
+            editor.setData(content);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+
+      // Add or update hidden input for subtitle_id or note_id
+      function setHiddenInput(name, value) {
+        const form = document.getElementById("note-form");
+        let input = form.querySelector(`input[name="${name}"]`);
+
+        if (!input) {
+          input = document.createElement("input");
+          input.type = "hidden";
+          input.name = name;
+          form.appendChild(input);
+        }
+
+        input.value = value;
+      }
+
+      // Delete a note
+      function deleteNote(noteId) {
+        if (!confirm("Are you sure you want to delete this note?")) {
+          return;
+        }
+
+        fetch("{% url 'delete_note' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")
+              .value,
+          },
+          body: JSON.stringify({ note_id: noteId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Note deleted successfully!");
+              window.location.reload();
+            } else {
+              alert(`Error deleting note: ${data.error}`);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while deleting the note.");
+          });
+      }
+
+      // Handle form submission for creating or editing notes
+      const form = document.getElementById("note-form");
+      form.onsubmit = function (event) {
+        event.preventDefault();
+
+        const content = editorInstance.getData();
+        const subtitleId = form.querySelector('input[name="subtitle_id"]')
+          ? form.querySelector('input[name="subtitle_id"]').value
+          : null;
+        const noteId = form.querySelector('input[name="note_id"]')
+          ? form.querySelector('input[name="note_id"]').value
+          : null;
+
+        if (!content.trim()) {
+          alert("Content cannot be empty.");
+          return;
+        }
+
+        const url = noteId
+          ? "{% url 'update_note' %}"
+          : "{% url 'create_note' %}";
+
+        const data = {
+          content: content,
+        };
+
+        if (subtitleId) {
+          data.subtitle_id = subtitleId;
+        }
+
+        if (noteId) {
+          data.note_id = noteId;
+        }
+
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")
+              .value,
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Note saved successfully!");
+              document.getElementById("note-editor-container").style.display =
+                "none";
+              form.reset();
+              window.location.reload();
+            } else {
+              alert(`Error saving note: ${data.error}`);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while saving the note.");
+          });
+      };
+    </script>
+  </body>
+</html>

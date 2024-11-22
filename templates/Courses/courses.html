@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Courses</title>
+    <link rel="stylesheet" href="{% static 'css/courses/coursesstyle.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="main-content">
+        {% for course in courses %}
+        <div class="course">
+          <a href="{% url 'course_detail' course.id %}">
+            <h2>{{ course.title }}</h2>
+            <p>{{ course.description }}</p>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

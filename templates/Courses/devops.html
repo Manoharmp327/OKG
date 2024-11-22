@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OKG | DevOps</title>
+    <link rel="stylesheet" href="{% static 'css/courses/devops.css' %}" />
+  </head>
+  <body>
+    <!-- Header -->
+    <div id="header">
+      <div class="logo">DevOps</div>
+      <div class="right-panel">
+        <a href="{% url 'courses' %}" class="header-link">Courses</a>
+        <a href="{% url 'login' %}" class="header-link">Logout</a>
+      </div>
+    </div>
+
+    <div class="app">
+      <!-- Sidebar -->
+      <div id="sidebar" class="closed">
+        <div class="sidebar-header">
+          <h3>Sigma 5.0</h3>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: 78%"></div>
+        </div>
+        <ul class="content-list">
+          <li>
+            <h4>1. Welcome to Sigma 5.0!</h4>
+            <ul>
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="pdf"
+                  data-title="Curriculum"
+                  >Curriculum (PDF)</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="pdf"
+                  data-title="Fill Your Details"
+                  >Fill Your Details (PDF)</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li>
+            <h4>2. Telegram Link</h4>
+            <ul>
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="pdf"
+                  data-title="Important"
+                  >Important (PDF)</a
+                >
+              </li>
+            </ul>
+          </li>
+          <li>
+            <h4>3. Live Mentorship Sessions</h4>
+            <ul>
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="video"
+                  data-title="Orientation Session"
+                  >Orientation Session (Video)</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="content-link"
+                  data-type="video"
+                  data-title="LinkedIn Mentorship"
+                  >LinkedIn Mentorship Session (Video)</a
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div id="main-content">
+        <button id="toggle-sidebar" title="Toggle Sidebar">&#x276E;</button>
+        <div id="content-header">
+          <h1>Welcome to Sigma 5.0</h1>
+          <p>Select a topic to get started.</p>
+        </div>
+        <div id="content-viewer">
+          <p>No content selected. Please choose a topic from the sidebar.</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/courses/devops.js' %}"></script>
+  </body>
+</html>

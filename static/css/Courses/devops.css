@@ -1,0 +1,339 @@
+/* Global Styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #b85042;
+  margin: 0;
+  color: #e7e8d1;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* App container */
+.app {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding-top: 60px; /* Space for header */
+  transition: all 0.3s ease;
+}
+
+/* Sidebar Styles */
+#sidebar {
+  width: 300px; /* Fixed width for sidebar */
+  background-color: #1f1f1f;
+  color: #e7e8d1;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 10;
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+
+#sidebar.closed {
+  transform: translateX(-300px); /* Sidebar slides out of view */
+  width: 0;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  padding: 15px;
+  background-color: #2a2a2a;
+}
+
+.sidebar-header h3 {
+  font-size: 18px;
+  color: #b85042;
+}
+
+/* Content List */
+.content-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.content-list li {
+  padding: 10px 15px;
+  border-bottom: 1px solid #333;
+}
+
+.content-list h4 {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #e7e8d1;
+}
+
+.content-link {
+  text-decoration: none;
+  color: #e7e8d1;
+  display: block;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.content-link:hover {
+  color: #b85042;
+}
+
+/* Main Content Viewer */
+#main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 300px; /* Make room for the fixed sidebar */
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  overflow-y: auto; /* Allow vertical scrolling */
+  max-height: 100vh; /* Limit the height of the content area */
+}
+
+#main-content.fullscreen {
+  margin-left: 0; /* Remove the left margin when the sidebar is closed */
+  width: 100%; /* Make the right panel take up the full width */
+  height: 100vh; /* Ensure the panel takes full height */
+}
+
+/* Content Header */
+#content-header {
+  background-color: #e7e8d1;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+#content-header h1 {
+  font-size: 28px;
+  color: #b85042;
+  margin-top: 0;
+}
+
+#content-header p {
+  font-size: 16px;
+}
+
+/* Content Viewer */
+#content-viewer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  min-height: 200px;
+  overflow-y: auto; /* Allow vertical scrolling */
+  max-height: 100vh; /* Limit the height of the content viewer */
+}
+
+#content-viewer h2 {
+  font-size: 22px;
+  color: #b85042;
+}
+
+/* Video Container Styling */
+.video-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  margin-bottom: 20px;
+}
+
+video {
+  width: 100%;
+  height: auto;
+  max-height: 75vh; /* Ensure the video doesn't exceed the right panel's height */
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+/* Sidebar Toggle Button */
+#toggle-sidebar {
+  background-color: #b85042;
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  position: absolute;
+  top: 40px;
+  left: 10px;
+  z-index: 1000;
+  border-radius: 50%;
+  padding: 10px;
+  transition: transform 0.3s ease;
+}
+
+#toggle-sidebar.flipped {
+  transform: rotate(180deg);
+}
+
+/* Header */
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2a2a;
+  color: #e7e8d1;
+  padding: 15px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#header .logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.right-panel {
+  display: flex;
+  gap: 20px;
+}
+
+.right-panel .header-link {
+  color: #e7e8d1;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.right-panel .header-link:hover {
+  color: #b85042;
+}
+
+/* Media Queries for Responsive Layout */
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+    padding-top: 80px; /* Adjust for header space */
+  }
+
+  #sidebar {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  #main-content {
+    margin-top: 70px;
+  }
+
+  #toggle-sidebar {
+    display: block;
+  }
+
+  #header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+/* Full-Screen PDF Viewer */
+#content-viewer.fullscreen {
+  height: 100vh; /* Full height when maximized */
+  overflow-y: auto; /* Allow scrolling when maximized */
+  padding: 0; /* Remove padding for full screen */
+}
+
+/* PDF Container Styling */
+#pdf-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-height: 60vh; /* Make sure the container is at most the full height of the viewport */
+  overflow-y: auto; /* Allow vertical scrolling if content overflows */
+  padding: 10px; /* Optional padding for better spacing */
+}
+
+#pdf-canvas {
+  width: 100%; /* Fit the PDF to the width of the container */
+  height: auto; /* Maintain aspect ratio of the PDF */
+  object-fit: contain; /* Ensure the PDF content fits inside without stretching */
+  border: 1px solid #e7e8d1;
+  border-radius: 10px;
+}
+
+/* PDF Controls */
+#pdf-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-color: #333;
+  color: #e7e8d1;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+#pdf-controls button {
+  background-color: #b85042;
+  color: #e7e8d1;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#pdf-controls button:hover {
+  background-color: #e7e8d1;
+  color: #333;
+}
+
+#pdf-controls .page-info {
+  font-size: 16px;
+  color: #e7e8d1;
+}
+
+#content-viewer.fullscreen {
+  height: 100vh;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+#pdf-container.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000;
+}
+
+#pdf-canvas.fullscreen {
+  width: 100%;
+  height: auto;
+}
+
+/* Styling for PDF controls in fullscreen */
+#pdf-controls button {
+  margin: 5px;
+}
+
+#pdf-controls {
+  display: flex;
+  gap: 10px;
+}
+
+/* Notes Container for Scrollable Content */
+.notes-container {
+  max-height: 80vh; /* Limit the height of the notes */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  padding-right: 10px; /* Padding to prevent text from touching the scrollbar */
+}
